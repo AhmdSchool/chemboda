@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚗️ معمل الكيمياء - تعلّم الكيمياء بطريقة ممتعة</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --text-color: #1a2b4c;
+    --primary: #00b4d8;
+    --secondary: #48cae4;
+    --accent: #ffb703;
+    --success: #06d6a0;
+    --danger: #ef476f;
+    --purple: #7b2ff7;
+    --pink: #ff006e;
+    --shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+
+  body.dark-mode {
+    --bg-gradient: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0d1b2a 100%);
+    --card-bg: rgba(25, 30, 55, 0.96);
+    --text-color: #e8eaf6;
+    --shadow: 0 8px 25px rgba(0,0,0,0.6);
+  }
+
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text-color);
+    transition: background 0.5s, color 0.3s;
+    padding-bottom: 100px;
+  }
+
+  header { text-align: center; padding: 25px 15px 15px; }
+
+  header h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    background: linear-gradient(90deg, #00b4d8, #ffb703, #ff006e, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    animation: floatTitle 3s ease-in-out infinite;
+  }
+
+  @keyframes floatTitle {
+    0%, 100% { transform: translateY(0); filter: hue-rotate(0deg); }
+    50% { transform: translateY(-6px); filter: hue-rotate(30deg); }
+  }
+
+  header p { font-size: clamp(0.85rem, 2.5vw, 1.1rem); opacity: 0.85; }
+
+  .tabs-container {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--card-bg);
+    backdrop-filter: blur(15px);
+    padding: 12px 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs-container::-webkit-scrollbar { display: none; }
+
+  .tabs {
+    display: flex; gap: 8px; justify-content: center;
+    min-width: max-content; padding: 0 10px;
+  }
+
+  .tab {
+    padding: 10px 18px;
+    border: 2px solid transparent;
+    border-radius: 25px;
+    background: rgba(0, 180, 216, 0.15);
+    color: var(--text-color);
+    font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+
+  .tab:hover { transform: translateY(-2px); background: rgba(0, 180, 216, 0.3); }
+
+  .tab.active {
+    background: linear-gradient(135deg, var(--primary), var(--purple));
+    color: white;
+    box-shadow: 0 5px 15px rgba(0, 180, 216, 0.4);
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+
+  .section { display: none; animation: fadeIn 0.5s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .section-title .emoji { font-size: 1.5em; }
+
+  /* ===== ELEMENTS GRID ===== */
+  .elements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    margin-bottom: 25px;
+  }
+
+  .element-card {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--shadow);
+    border: 3px solid transparent;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .element-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 5px;
+    background: var(--cat-color, var(--primary));
+  }
+
+  .element-card:hover {
+    transform: translateY(-6px) scale(1.05);
+    border-color: var(--cat-color, var(--primary));
+    box-shadow: 0 15px 35px rgba(0, 180, 216, 0.3);
+  }
+
+  .element-card:active { transform: scale(0.95); }
+
+  .element-card.speaking {
+    animation: pulse 0.5s;
+    border-color: var(--success);
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.7); }
+    70% { transform: scale(1.08); box-shadow: 0 0 0 15px rgba(6, 214, 160, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(6, 214, 160, 0); }
+  }
+
+  .element-atomic {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 0.7rem;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-weight: bold;
+  }
+
+  .element-symbol {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    font-weight: bold;
+    color: var(--cat-color, var(--primary));
+    line-height: 1.1;
+    margin: 8px 0 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .element-name {
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+    font-weight: 600;
+    color: var(--text-color);
+    opacity: 0.85;
+    margin-bottom: 3px;
+  }
+
+  .element-mass {
+    font-size: 0.7rem;
+    color: var(--text-color);
+    opacity: 0.6;
+  }
+
+  /* ===== CATEGORIES FILTER ===== */
+  .categories-filter {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .cat-btn {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    box-shadow: var(--shadow);
+  }
+
+  .cat-btn:hover { transform: translateY(-2px); }
+  .cat-btn.active { color: white; transform: scale(1.05); }
+
+  /* ===== REACTION LAB ===== */
+  .lab-container {
+    background: var(--card-bg);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+  }
+
+  .lab-title {
+    text-align: center;
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    margin-bottom: 20px;
+    color: var(--primary);
+    font-weight: bold;
+  }
+
+  .reaction-area {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .reaction-area { grid-template-columns: 1fr; }
+    .reaction-plus { text-align: center; }
+  }
+
+  .reaction-slot {
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(123, 47, 247, 0.1));
+    border: 3px dashed rgba(0, 180, 216, 0.4);
+    border-radius: 18px;
+    padding: 25px 15px;
+    text-align: center;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .reaction-slot:hover {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.2), rgba(123, 47, 247, 0.2));
+  }
+
+  .reaction-slot .slot-label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-bottom: 5px;
+  }
+
+  .reaction-slot .slot-symbol {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    color: var(--primary);
+  }
+
+  .reaction-slot .slot-name {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .reaction-plus {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: bold;
+    color: var(--accent);
+    text-align: center;
+  }
+
+  .reaction-result {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(6, 214, 160, 0.1), rgba(72, 202, 228, 0.1));
+    border-radius: 18px;
+    border: 3px solid rgba(6, 214, 160, 0.3);
+    margin-top: 15px;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    font-weight: bold;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .reaction-result.success { color: var(--success); border-color: var(--success); }
+  .reaction-result.error { color: var(--danger); border-color: var(--danger); }
+
+  .element-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 8px;
+    margin-top: 15px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 12px;
+    background: rgba(0, 180, 216, 0.05);
+    border-radius: 15px;
+  }
+
+  .element-pick {
+    padding: 10px 5px;
+    border-radius: 10px;
+    border: 2px solid var(--cat-color, var(--primary));
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .element-pick:hover {
+    background: var(--cat-color, var(--primary));
+    color: white;
+    transform: scale(1.1);
+  }
+
+  /* ===== MOLECULE BUILDER ===== */
+  .molecule-display {
+    text-align: center;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(255, 183, 3, 0.1), rgba(255, 0, 110, 0.1));
+    border-radius: 20px;
+    margin-bottom: 20px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-weight: bold;
+    border: 3px dashed rgba(255, 183, 3, 0.4);
+  }
+
+  .molecule-display .mol-symbol {
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+  }
+
+  .molecule-display .mol-count {
+    color: var(--pink);
+    font-size: 0.7em;
+    vertical-align: sub;
+    margin-left: -3px;
+  }
+
+  .molecule-display .mol-placeholder {
+    color: #ccc;
+  }
+
+  /* ===== PERIODIC TABLE ===== */
+  .periodic-table {
+    display: grid;
+    grid-template-columns: repeat(18, minmax(38px, 1fr));
+    gap: 4px;
+    overflow-x: auto;
+    padding: 15px 5px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+  }
+
+  @media (max-width: 900px) {
+    .periodic-table {
+      grid-template-columns: repeat(18, minmax(32px, 1fr));
+      gap: 3px;
+    }
+  }
+
+  .pt-element {
+    aspect-ratio: 1;
+    min-height: 38px;
+    border-radius: 6px;
+    background: var(--cat-color, #ccc);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    padding: 2px;
+    overflow: hidden;
+    font-weight: bold;
+  }
+
+  .pt-element:hover {
+    transform: scale(1.15);
+    z-index: 10;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  }
+
+  .pt-element .pt-num {
+    font-size: 0.55rem;
+    opacity: 0.85;
+    line-height: 1;
+  }
+
+  .pt-element .pt-sym {
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    font-family: 'Courier New', monospace;
+    line-height: 1;
+    margin: 1px 0;
+  }
+
+  .pt-element .pt-name {
+    font-size: 0.5rem;
+    opacity: 0.85;
+    line-height: 1;
+    display: none;
+  }
+
+  @media (min-width: 800px) {
+    .pt-element .pt-name { display: block; }
+  }
+
+  .pt-element.empty {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  /* ===== QUIZ ===== */
+  .quiz-card {
+    background: var(--card-bg);
+    border-radius: 25px;
+    padding: 30px 25px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .quiz-question {
+    font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.08), rgba(123, 47, 247, 0.08));
+    border-radius: 20px;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .quiz-option {
+    padding: 18px 12px;
+    font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+    font-weight: bold;
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.12), rgba(123, 47, 247, 0.12));
+    border: 3px solid transparent;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--text-color);
+    font-family: inherit;
+  }
+
+  .quiz-option:hover {
+    transform: translateY(-4px) scale(1.03);
+    border-color: var(--primary);
+  }
+
+  .quiz-option.correct {
+    background: linear-gradient(135deg, #06d6a0, #48cae4);
+    color: white;
+    animation: correctPop 0.5s;
+  }
+
+  .quiz-option.wrong {
+    background: linear-gradient(135deg, #ef476f, #ff006e);
+    color: white;
+    animation: shake 0.4s;
+  }
+
+  @keyframes correctPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .quiz-stats {
+    display: flex; justify-content: center; gap: 15px;
+    flex-wrap: wrap; margin-bottom: 20px; font-weight: bold;
+  }
+
+  .stat-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(0, 180, 216, 0.15);
+    color: var(--text-color);
+    font-size: clamp(0.85rem, 2.5vw, 1rem);
+  }
+
+  .stat-badge.correct-stat { background: rgba(6, 214, 160, 0.2); color: #06d6a0; }
+  .stat-badge.wrong-stat { background: rgba(239, 71, 111, 0.2); color: #ef476f; }
+  .stat-badge.score-stat { background: rgba(255, 183, 3, 0.25); color: #b8860b; }
+  body.dark-mode .stat-badge.score-stat { color: #ffb703; }
+
+  /* ===== STATES OF MATTER ===== */
+  .matter-card {
+    background: var(--card-bg);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+  }
+
+  .matter-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .matter-btn {
+    padding: 12px 22px;
+    border-radius: 15px;
+    border: 3px solid transparent;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    box-shadow: var(--shadow);
+    font-size: clamp(0.85rem, 2.3vw, 1rem);
+  }
+
+  .matter-btn:hover { transform: translateY(-3px); }
+  .matter-btn.active { color: white; }
+
+  .matter-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
+    background: linear-gradient(135deg, rgba(0, 180, 216, 0.08), rgba(123, 47, 247, 0.08));
+    border-radius: 20px;
+    margin-bottom: 15px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .particle {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #48cae4, #0077b6);
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.6);
+    position: absolute;
+  }
+
+  .matter-info {
+    padding: 15px;
+    background: rgba(0, 180, 216, 0.08);
+    border-radius: 15px;
+    font-size: clamp(0.85rem, 2.3vw, 1rem);
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  /* ===== FLOATING BUTTONS ===== */
+  .floating-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1000;
+  }
+
+  .fab {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s;
+    position: relative;
+    color: white;
+    text-decoration: none;
+  }
+
+  .fab:hover { transform: scale(1.1) rotate(5deg); }
+  .fab:active { transform: scale(0.95); }
+
+  .fab-language { background: linear-gradient(135deg, #00b4d8, #ffb703); }
+  .fab-theme { background: linear-gradient(135deg, #48cae4, #7b2ff7); }
+  .fab-whatsapp { background: linear-gradient(135deg, #25D366, #128C7E); }
+
+  .fab-label {
+    position: absolute;
+    right: 70px;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+  }
+
+  .fab:hover .fab-label { opacity: 1; right: 75px; }
+
+  @media (max-width: 600px) {
+    .fab { width: 52px; height: 52px; font-size: 1.4rem; }
+    .fab-label { display: none; }
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, var(--primary), var(--purple));
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transition: transform 0.4s ease;
+    z-index: 2000;
+    font-size: 0.95rem;
+    text-align: center;
+    max-width: 90vw;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  footer { text-align: center; padding: 20px; opacity: 0.7; font-size: 0.85rem; }
+
+  .btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 12px;
+    font-size: clamp(0.85rem, 2.3vw, 1rem);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    color: white;
+  }
+
+  .btn-primary { background: linear-gradient(135deg, var(--primary), var(--purple)); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 180, 216, 0.5); }
+  .btn-success { background: linear-gradient(135deg, #06d6a0, #48cae4); }
+  .btn-success:hover { transform: translateY(-2px); }
+  .btn-secondary { background: linear-gradient(135deg, #ffb703, #ff006e); }
+  .btn-secondary:hover { transform: translateY(-2px); }
+  .btn-danger { background: linear-gradient(135deg, #ef476f, #ff006e); }
+  .btn-danger:hover { transform: translateY(-2px); }
+
+  .action-buttons {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    margin-top: 15px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="mainTitle">⚗️ معمل الكيمياء</h1>
+  <p id="subTitle">اكتشف عالم العناصر والتفاعلات الكيميائية!</p>
+</header>
+
+<div class="tabs-container">
+  <div class="tabs" id="tabsContainer"></div>
+</div>
+
+<div class="container">
+  <div class="section active" id="section-elements">
+    <h2 class="section-title"><span class="emoji">🧪</span> <span id="titleElements">العناصر الكيميائية</span></h2>
+    <div class="categories-filter" id="categoriesFilter"></div>
+    <div class="elements-grid" id="elementsGrid"></div>
+  </div>
+
+  <div class="section" id="section-periodic">
+    <h2 class="section-title"><span class="emoji">📊</span> <span id="titlePeriodic">الجدول الدوري</span></h2>
+    <div class="periodic-table" id="periodicTable"></div>
+  </div>
+
+  <div class="section" id="section-lab">
+    <h2 class="section-title"><span class="emoji">⚗️</span> <span id="titleLab">معمل التفاعلات</span></h2>
+    <div class="lab-container">
+      <div class="lab-title" id="labTitle">اختر عنصرين لترى تفاعلهما</div>
+      <div class="reaction-area">
+        <div class="reaction-slot" onclick="openPicker(1)">
+          <div class="slot-label" id="slot1Label">العنصر الأول</div>
+          <div class="slot-symbol" id="slot1Symbol">?</div>
+          <div class="slot-name" id="slot1Name">اضغط للاختيار</div>
+        </div>
+        <div class="reaction-plus">+</div>
+        <div class="reaction-slot" onclick="openPicker(2)">
+          <div class="slot-label" id="slot2Label">العنصر الثاني</div>
+          <div class="slot-symbol" id="slot2Symbol">?</div>
+          <div class="slot-name" id="slot2Name">اضغط للاختيار</div>
+        </div>
+      </div>
+      <div class="reaction-result" id="reactionResult"></div>
+      <div class="action-buttons">
+        <button class="btn btn-success" onclick="reactElements()">⚡ <span id="reactBtn">تفاعل!</span></button>
+        <button class="btn btn-primary" onclick="randomReaction()">🎲 <span id="randomReactBtn">تفاعل عشوائي</span></button>
+        <button class="btn btn-danger" onclick="clearReaction()">🗑️ <span id="clearReactBtn">مسح</span></button>
+      </div>
+    </div>
+    <div class="element-picker" id="elementPicker" style="display:none;"></div>
+  </div>
+
+  <div class="section" id="section-molecule">
+    <h2 class="section-title"><span class="emoji">🧬</span> <span id="titleMolecule">بنّاء الجزيئات</span></h2>
+    <div class="lab-container">
+      <div class="lab-title" id="moleculeTitle">اضغط على عنصر لإضافته إلى الجزيء</div>
+      <div class="molecule-display" id="moleculeDisplay">
+        <span class="mol-placeholder">اضغط على عنصر لبناء جزيء</span>
+      </div>
+      <div class="action-buttons">
+        <button class="btn btn-success" onclick="speakMolecule()">🔊 <span id="speakMolBtn">اسمع الصيغة</span></button>
+        <button class="btn btn-primary" onclick="saveMolecule()">💾 <span id="saveMolBtn">احفظ الصيغة</span></button>
+        <button class="btn btn-danger" onclick="clearMolecule()">🗑️ <span id="clearMolBtn">مسح</span></button>
+      </div>
+      <div class="element-picker" id="moleculePicker" style="margin-top:15px;"></div>
+      <div class="reaction-result" id="moleculeResult" style="margin-top:15px;"></div>
+    </div>
+  </div>
+
+  <div class="section" id="section-matter">
+    <h2 class="section-title"><span class="emoji">🌡️</span> <span id="titleMatter">حالات المادة</span></h2>
+    <div class="matter-card">
+      <div class="matter-selector" id="matterSelector"></div>
+      <div class="matter-visual" id="matterVisual"></div>
+      <div class="matter-info" id="matterInfo"></div>
+    </div>
+  </div>
+
+  <div class="section" id="section-quiz">
+    <h2 class="section-title"><span class="emoji">🎯</span> <span id="titleQuiz">اختبر معرفتك الكيميائية</span></h2>
+    <div class="quiz-stats">
+      <span class="stat-badge correct-stat">✅ <span id="quizCorrect">0</span></span>
+      <span class="stat-badge wrong-stat">❌ <span id="quizWrong">0</span></span>
+      <span class="stat-badge score-stat">⭐ <span id="quizScore">0</span></span>
+    </div>
+    <div class="quiz-card">
+      <div class="quiz-question" id="quizQuestion">اضغط "ابدأ الاختبار"</div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="startQuiz()">🚀 <span id="startQuizBtn">ابدأ الاختبار</span></button>
+        <button class="btn btn-danger" onclick="resetQuiz()">🔄 <span id="resetQuizBtn">إعادة تعيين</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p id="footerText">💜 صُنع بحب لتعليم الكيمياء — تواصل معنا عبر واتساب</p>
+</footer>
+
+<div class="floating-buttons">
+  <button class="fab fab-language" onclick="toggleLanguage()" title="تبديل اللغة">
+    🌐
+    <span class="fab-label" id="labelLang">English</span>
+  </button>
+  <button class="fab fab-theme" onclick="toggleTheme()" title="تبديل المظهر">
+    🌙
+    <span class="fab-label" id="labelTheme">المظهر الليلي</span>
+  </button>
+  <a href="https://wa.me/201080060990" target="_blank" class="fab fab-whatsapp" title="تواصل عبر واتساب">
+    💬
+    <span class="fab-label" id="labelWhats">تواصل معنا</span>
+  </a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ الجدول الدوري - البيانات ============
+const ELEMENTS = [
+  {z:1, sym:'H', ar:'هيدروجين', en:'Hydrogen', mass:1.008, cat:'nonmetal', row:1, col:1, group:'الفلزات اللافلزية'},
+  {z:2, sym:'He', ar:'هيليوم', en:'Helium', mass:4.0026, cat:'noble', row:1, col:18, group:'الغازات النبيلة'},
+  {z:3, sym:'Li', ar:'ليثيوم', en:'Lithium', mass:6.94, cat:'alkali', row:2, col:1, group:'الفلزات القلوية'},
+  {z:4, sym:'Be', ar:'بيريليوم', en:'Beryllium', mass:9.0122, cat:'alkaline', row:2, col:2, group:'الفلزات القلوية الترابية'},
+  {z:5, sym:'B', ar:'بورون', en:'Boron', mass:10.81, cat:'metalloid', row:2, col:13, group:'أشباه الفلزات'},
+  {z:6, sym:'C', ar:'كربون', en:'Carbon', mass:12.011, cat:'nonmetal', row:2, col:14, group:'الفلزات اللافلزية'},
+  {z:7, sym:'N', ar:'نيتروجين', en:'Nitrogen', mass:14.007, cat:'nonmetal', row:2, col:15, group:'الفلزات اللافلزية'},
+  {z:8, sym:'O', ar:'أكسجين', en:'Oxygen', mass:15.999, cat:'nonmetal', row:2, col:16, group:'الفلزات اللافلزية'},
+  {z:9, sym:'F', ar:'فلور', en:'Fluorine', mass:18.998, cat:'halogen', row:2, col:17, group:'الهالوجينات'},
+  {z:10, sym:'Ne', ar:'نيون', en:'Neon', mass:20.180, cat:'noble', row:2, col:18, group:'الغازات النبيلة'},
+  {z:11, sym:'Na', ar:'صوديوم', en:'Sodium', mass:22.990, cat:'alkali', row:3, col:1, group:'الفلزات القلوية'},
+  {z:12, sym:'Mg', ar:'مغنيسيوم', en:'Magnesium', mass:24.305, cat:'alkaline', row:3, col:2, group:'الفلزات القلوية الترابية'},
+  {z:13, sym:'Al', ar:'ألومنيوم', en:'Aluminum', mass:26.982, cat:'post', row:3, col:13, group:'الفلزات الانتقالية بعد'},
+  {z:14, sym:'Si', ar:'سيليكون', en:'Silicon', mass:28.085, cat:'metalloid', row:3, col:14, group:'أشباه الفلزات'},
+  {z:15, sym:'P', ar:'فوسفور', en:'Phosphorus', mass:30.974, cat:'nonmetal', row:3, col:15, group:'الفلزات اللافلزية'},
+  {z:16, sym:'S', ar:'كبريت', en:'Sulfur', mass:32.06, cat:'nonmetal', row:3, col:16, group:'الفلزات اللافلزية'},
+  {z:17, sym:'Cl', ar:'كلور', en:'Chlorine', mass:35.45, cat:'halogen', row:3, col:17, group:'الهالوجينات'},
+  {z:18, sym:'Ar', ar:'أرجون', en:'Argon', mass:39.948, cat:'noble', row:3, col:18, group:'الغازات النبيلة'},
+  {z:19, sym:'K', ar:'بوتاسيوم', en:'Potassium', mass:39.098, cat:'alkali', row:4, col:1, group:'الفلزات القلوية'},
+  {z:20, sym:'Ca', ar:'كالسيوم', en:'Calcium', mass:40.078, cat:'alkaline', row:4, col:2, group:'الفلزات القلوية الترابية'},
+  {z:21, sym:'Sc', ar:'سكانديوم', en:'Scandium', mass:44.956, cat:'transition', row:4, col:3, group:'الفلزات الانتقالية'},
+  {z:22, sym:'Ti', ar:'تيتانيوم', en:'Titanium', mass:47.867, cat:'transition', row:4, col:4, group:'الفلزات الانتقالية'},
+  {z:23, sym:'V', ar:'فاناديوم', en:'Vanadium', mass:50.942, cat:'transition', row:4, col:5, group:'الفلزات الانتقالية'},
+  {z:24, sym:'Cr', ar:'كروم', en:'Chromium', mass:51.996, cat:'transition', row:4, col:6, group:'الفلزات الانتقالية'},
+  {z:25, sym:'Mn', ar:'منجنيز', en:'Manganese', mass:54.938, cat:'transition', row:4, col:7, group:'الفلزات الانتقالية'},
+  {z:26, sym:'Fe', ar:'حديد', en:'Iron', mass:55.845, cat:'transition', row:4, col:8, group:'الفلزات الانتقالية'},
+  {z:27, sym:'Co', ar:'كوبالت', en:'Cobalt', mass:58.933, cat:'transition', row:4, col:9, group:'الفلزات الانتقالية'},
+  {z:28, sym:'Ni', ar:'نيكل', en:'Nickel', mass:58.693, cat:'transition', row:4, col:10, group:'الفلزات الانتقالية'},
+  {z:29, sym:'Cu', ar:'نحاس', en:'Copper', mass:63.546, cat:'transition', row:4, col:11, group:'الفلزات الانتقالية'},
+  {z:30, sym:'Zn', ar:'زنك', en:'Zinc', mass:65.38, cat:'transition', row:4, col:12, group:'الفلزات الانتقالية'},
+  {z:31, sym:'Ga', ar:'جاليوم', en:'Gallium', mass:69.723, cat:'post', row:4, col:13, group:'الفلزات الانتقالية بعد'},
+  {z:32, sym:'Ge', ar:'جرمانيوم', en:'Germanium', mass:72.630, cat:'metalloid', row:4, col:14, group:'أشباه الفلزات'},
+  {z:33, sym:'As', ar:'زرنيخ', en:'Arsenic', mass:74.922, cat:'metalloid', row:4, col:15, group:'أشباه الفلزات'},
+  {z:34, sym:'Se', ar:'سيلينيوم', en:'Selenium', mass:78.971, cat:'nonmetal', row:4, col:16, group:'الفلزات اللافلزية'},
+  {z:35, sym:'Br', ar:'بروم', en:'Bromine', mass:79.904, cat:'halogen', row:4, col:17, group:'الهالوجينات'},
+  {z:36, sym:'Kr', ar:'كريبتون', en:'Krypton', mass:83.798, cat:'noble', row:4, col:18, group:'الغازات النبيلة'},
+  {z:37, sym:'Rb', ar:'روبيديوم', en:'Rubidium', mass:85.468, cat:'alkali', row:5, col:1, group:'الفلزات القلوية'},
+  {z:38, sym:'Sr', ar:'سترونشيوم', en:'Strontium', mass:87.62, cat:'alkaline', row:5, col:2, group:'الفلزات القلوية الترابية'},
+  {z:39, sym:'Y', ar:'إيتريوم', en:'Yttrium', mass:88.906, cat:'transition', row:5, col:3, group:'الفلزات الانتقالية'},
+  {z:40, sym:'Zr', ar:'زركونيوم', en:'Zirconium', mass:91.224, cat:'transition', row:5, col:4, group:'الفلزات الانتقالية'},
+  {z:41, sym:'Nb', ar:'نيوبيوم', en:'Niobium', mass:92.906, cat:'transition', row:5, col:5, group:'الفلزات الانتقالية'},
+  {z:42, sym:'Mo', ar:'موليبدينوم', en:'Molybdenum', mass:95.95, cat:'transition', row:5, col:6, group:'الفلزات الانتقالية'},
+  {z:43, sym:'Tc', ar:'تكنيشيوم', en:'Technetium', mass:98, cat:'transition', row:5, col:7, group:'الفلزات الانتقالية'},
+  {z:44, sym:'Ru', ar:'روثينيوم', en:'Ruthenium', mass:101.07, cat:'transition', row:5, col:8, group:'الفلزات الانتقالية'},
+  {z:45, sym:'Rh', ar:'روديوم', en:'Rhodium', mass:102.91, cat:'transition', row:5, col:9, group:'الفلزات الانتقالية'},
+  {z:46, sym:'Pd', ar:'بالاديوم', en:'Palladium', mass:106.42, cat:'transition', row:5, col:10, group:'الفلزات الانتقالية'},
+  {z:47, sym:'Ag', ar:'فضة', en:'Silver', mass:107.87, cat:'transition', row:5, col:11, group:'الفلزات الانتقالية'},
+  {z:48, sym:'Cd', ar:'كادميوم', en:'Cadmium', mass:112.41, cat:'transition', row:5, col:12, group:'الفلزات الانتقالية'},
+  {z:49, sym:'In', ar:'إنديوم', en:'Indium', mass:114.82, cat:'post', row:5, col:13, group:'الفلزات الانتقالية بعد'},
+  {z:50, sym:'Sn', ar:'قصدير', en:'Tin', mass:118.71, cat:'post', row:5, col:14, group:'الفلزات الانتقالية بعد'},
+  {z:51, sym:'Sb', ar:'أنتيمون', en:'Antimony', mass:121.76, cat:'metalloid', row:5, col:15, group:'أشباه الفلزات'},
+  {z:52, sym:'Te', ar:'تيلوريوم', en:'Tellurium', mass:127.60, cat:'metalloid', row:5, col:16, group:'أشباه الفلزات'},
+  {z:53, sym:'I', ar:'يود', en:'Iodine', mass:126.90, cat:'halogen', row:5, col:17, group:'الهالوجينات'},
+  {z:54, sym:'Xe', ar:'زينون', en:'Xenon', mass:131.29, cat:'noble', row:5, col:18, group:'الغازات النبيلة'},
+  {z:55, sym:'Cs', ar:'سيزيوم', en:'Cesium', mass:132.91, cat:'alkali', row:6, col:1, group:'الفلزات القلوية'},
+  {z:56, sym:'Ba', ar:'باريوم', en:'Barium', mass:137.33, cat:'alkaline', row:6, col:2, group:'الفلزات القلوية الترابية'},
+  {z:57, sym:'La', ar:'لانثانوم', en:'Lanthanum', mass:138.91, cat:'lanth', row:6, col:3, group:'اللانثانيدات'},
+  {z:58, sym:'Ce', ar:'سيريوم', en:'Cerium', mass:140.12, cat:'lanth', row:6, col:4, group:'اللانثانيدات'},
+  {z:59, sym:'Pr', ar:'براسيوديميوم', en:'Praseodymium', mass:140.91, cat:'lanth', row:6, col:5, group:'اللانثانيدات'},
+  {z:60, sym:'Nd', ar:'نيوديميوم', en:'Neodymium', mass:144.24, cat:'lanth', row:6, col:6, group:'اللانثانيدات'},
+  {z:61, sym:'Pm', ar:'بروميثيوم', en:'Promethium', mass:145, cat:'lanth', row:6, col:7, group:'اللانثانيدات'},
+  {z:62, sym:'Sm', ar:'ساماريوم', en:'Samarium', mass:150.36, cat:'lanth', row:6, col:8, group:'اللانثانيدات'},
+  {z:63, sym:'Eu', ar:'يوروبيوم', en:'Europium', mass:151.96, cat:'lanth', row:6, col:9, group:'اللانثانيدات'},
+  {z:64, sym:'Gd', ar:'جادولينيوم', en:'Gadolinium', mass:157.25, cat:'lanth', row:6, col:10, group:'اللانثانيدات'},
+  {z:65, sym:'Tb', ar:'تيربيوم', en:'Terbium', mass:158.93, cat:'lanth', row:6, col:11, group:'اللانثانيدات'},
+  {z:66, sym:'Dy', ar:'ديسبروسيوم', en:'Dysprosium', mass:162.50, cat:'lanth', row:6, col:12, group:'اللانثانيدات'},
+  {z:67, sym:'Ho', ar:'هولميوم', en:'Holmium', mass:164.93, cat:'lanth', row:6, col:13, group:'اللانثانيدات'},
+  {z:68, sym:'Er', ar:'إربيوم', en:'Erbium', mass:167.26, cat:'lanth', row:6, col:14, group:'اللانثانيدات'},
+  {z:69, sym:'Tm', ar:'ثوليوم', en:'Thulium', mass:168.93, cat:'lanth', row:6, col:15, group:'اللانثانيدات'},
+  {z:70, sym:'Yb', ar:'إيتربيوم', en:'Ytterbium', mass:173.05, cat:'lanth', row:6, col:16, group:'اللانثانيدات'},
+  {z:71, sym:'Lu', ar:'لوتيشيوم', en:'Lutetium', mass:174.97, cat:'lanth', row:6, col:17, group:'اللانثانيدات'},
+  {z:72, sym:'Hf', ar:'هافنيوم', en:'Hafnium', mass:178.49, cat:'transition', row:6, col:4, group:'الفلزات الانتقالية'},
+  {z:73, sym:'Ta', ar:'تانتالوم', en:'Tantalum', mass:180.95, cat:'transition', row:6, col:5, group:'الفلزات الانتقالية'},
+  {z:74, sym:'W', ar:'تنجستن', en:'Tungsten', mass:183.84, cat:'transition', row:6, col:6, group:'الفلزات الانتقالية'},
+  {z:75, sym:'Re', ar:'رينيوم', en:'Rhenium', mass:186.21, cat:'transition', row:6, col:7, group:'الفلزات الانتقالية'},
+  {z:76, sym:'Os', ar:'أوزميوم', en:'Osmium', mass:190.23, cat:'transition', row:6, col:8, group:'الفلزات الانتقالية'},
+  {z:77, sym:'Ir', ar:'إيريديوم', en:'Iridium', mass:192.22, cat:'transition', row:6, col:9, group:'الفلزات الانتقالية'},
+  {z:78, sym:'Pt', ar:'بلاتين', en:'Platinum', mass:195.08, cat:'transition', row:6, col:10, group:'الفلزات الانتقالية'},
+  {z:79, sym:'Au', ar:'ذهب', en:'Gold', mass:196.97, cat:'transition', row:6, col:11, group:'الفلزات الانتقالية'},
+  {z:80, sym:'Hg', ar:'زئبق', en:'Mercury', mass:200.59, cat:'transition', row:6, col:12, group:'الفلزات الانتقالية'},
+  {z:81, sym:'Tl', ar:'ثاليوم', en:'Thallium', mass:204.38, cat:'post', row:6, col:13, group:'الفلزات الانتقالية بعد'},
+  {z:82, sym:'Pb', ar:'رصاص', en:'Lead', mass:207.2, cat:'post', row:6, col:14, group:'الفلزات الانتقالية بعد'},
+  {z:83, sym:'Bi', ar:'بزموت', en:'Bismuth', mass:208.98, cat:'post', row:6, col:15, group:'الفلزات الانتقالية بعد'},
+  {z:84, sym:'Po', ar:'بولونيوم', en:'Polonium', mass:209, cat:'metalloid', row:6, col:16, group:'أشباه الفلزات'},
+  {z:85, sym:'At', ar:'أستاتين', en:'Astatine', mass:210, cat:'halogen', row:6, col:17, group:'الهالوجينات'},
+  {z:86, sym:'Rn', ar:'رادون', en:'Radon', mass:222, cat:'noble', row:6, col:18, group:'الغازات النبيلة'},
+  {z:87, sym:'Fr', ar:'فرانسيوم', en:'Francium', mass:223, cat:'alkali', row:7, col:1, group:'الفلزات القلوية'},
+  {z:88, sym:'Ra', ar:'راديوم', en:'Radium', mass:226, cat:'alkaline', row:7, col:2, group:'الفلزات القلوية الترابية'},
+  {z:89, sym:'Ac', ar:'أكتينيوم', en:'Actinium', mass:227, cat:'act', row:7, col:3, group:'الأكتينيدات'},
+  {z:90, sym:'Th', ar:'ثوريوم', en:'Thorium', mass:232.04, cat:'act', row:7, col:4, group:'الأكتينيدات'},
+  {z:91, sym:'Pa', ar:'بروتكتينيوم', en:'Protactinium', mass:231.04, cat:'act', row:7, col:5, group:'الأكتينيدات'},
+  {z:92, sym:'U', ar:'يورانيوم', en:'Uranium', mass:238.03, cat:'act', row:7, col:6, group:'الأكتينيدات'},
+  {z:93, sym:'Np', ar:'نبتونيوم', en:'Neptunium', mass:237, cat:'act', row:7, col:7, group:'الأكتينيدات'},
+  {z:94, sym:'Pu', ar:'بلوتونيوم', en:'Plutonium', mass:244, cat:'act', row:7, col:8, group:'الأكتينيدات'},
+  {z:95, sym:'Am', ar:'أمريسيوم', en:'Americium', mass:243, cat:'act', row:7, col:9, group:'الأكتينيدات'},
+  {z:96, sym:'Cm', ar:'كوريوم', en:'Curium', mass:247, cat:'act', row:7, col:10, group:'الأكتينيدات'},
+  {z:97, sym:'Bk', ar:'بيركيليوم', en:'Berkelium', mass:247, cat:'act', row:7, col:11, group:'الأكتينيدات'},
+  {z:98, sym:'Cf', ar:'كاليفورنيوم', en:'Californium', mass:251, cat:'act', row:7, col:12, group:'الأكتينيدات'},
+  {z:99, sym:'Es', ar:'أينشتاينيوم', en:'Einsteinium', mass:252, cat:'act', row:7, col:13, group:'الأكتينيدات'},
+  {z:100, sym:'Fm', ar:'فيرميوم', en:'Fermium', mass:257, cat:'act', row:7, col:14, group:'الأكتينيدات'},
+  {z:101, sym:'Md', ar:'مندليفيوم', en:'Mendelevium', mass:258, cat:'act', row:7, col:15, group:'الأكتينيدات'},
+  {z:102, sym:'No', ar:'نوبيليوم', en:'Nobelium', mass:259, cat:'act', row:7, col:16, group:'الأكتينيدات'},
+  {z:103, sym:'Lr', ar:'لورنسيوم', en:'Lawrencium', mass:266, cat:'act', row:7, col:17, group:'الأكتينيدات'},
+  {z:104, sym:'Rf', ar:'رذرفورديوم', en:'Rutherfordium', mass:267, cat:'transition', row:7, col:4, group:'الفلزات الانتقالية'},
+  {z:105, sym:'Db', ar:'دوبنيوم', en:'Dubnium', mass:268, cat:'transition', row:7, col:5, group:'الفلزات الانتقالية'},
+  {z:106, sym:'Sg', ar:'سيبورجيوم', en:'Seaborgium', mass:269, cat:'transition', row:7, col:6, group:'الفلزات الانتقالية'},
+  {z:107, sym:'Bh', ar:'بوريوم', en:'Bohrium', mass:270, cat:'transition', row:7, col:7, group:'الفلزات الانتقالية'},
+  {z:108, sym:'Hs', ar:'هاسيوم', en:'Hassium', mass:277, cat:'transition', row:7, col:8, group:'الفلزات الانتقالية'},
+  {z:109, sym:'Mt', ar:'مايتنريوم', en:'Meitnerium', mass:278, cat:'transition', row:7, col:9, group:'الفلزات الانتقالية'},
+  {z:110, sym:'Ds', ar:'دارمشتاتيوم', en:'Darmstadtium', mass:281, cat:'transition', row:7, col:10, group:'الفلزات الانتقالية'},
+  {z:111, sym:'Rg', ar:'رونتجينيوم', en:'Roentgenium', mass:282, cat:'transition', row:7, col:11, group:'الفلزات الانتقالية'},
+  {z:112, sym:'Cn', ar:'كوبرنيسيوم', en:'Copernicium', mass:285, cat:'transition', row:7, col:12, group:'الفلزات الانتقالية'},
+  {z:113, sym:'Nh', ar:'نيهونيوم', en:'Nihonium', mass:286, cat:'post', row:7, col:13, group:'الفلزات الانتقالية بعد'},
+  {z:114, sym:'Fl', ar:'فليروفيوم', en:'Flerovium', mass:289, cat:'post', row:7, col:14, group:'الفلزات الانتقالية بعد'},
+  {z:115, sym:'Mc', ar:'موسكوفيوم', en:'Moscovium', mass:290, cat:'post', row:7, col:15, group:'الفلزات الانتقالية بعد'},
+  {z:116, sym:'Lv', ar:'ليفرموريوم', en:'Livermorium', mass:293, cat:'post', row:7, col:16, group:'الفلزات الانتقالية بعد'},
+  {z:117, sym:'Ts', ar:'تينيسين', en:'Tennessine', mass:294, cat:'halogen', row:7, col:17, group:'الهالوجينات'},
+  {z:118, sym:'Og', ar:'أوغانيسون', en:'Oganesson', mass:294, cat:'noble', row:7, col:18, group:'الغازات النبيلة'}
+];
+
+// ألوان الفئات
+const CAT_COLORS = {
+  alkali: '#ef476f',
+  alkaline: '#ff8c42',
+  transition: '#118ab2',
+  post: '#06d6a0',
+  metalloid: '#8d99ae',
+  nonmetal: '#00b4d8',
+  halogen: '#ffb703',
+  noble: '#7b2ff7',
+  lanth: '#ff006e',
+  act: '#c1121f'
+};
+
+const CAT_NAMES_AR = {
+  alkali: 'قلوية', alkaline: 'قلوية ترابية', transition: 'انتقالية',
+  post: 'بعد انتقالية', metalloid: 'أشباه فلزات', nonmetal: 'لافلزية',
+  halogen: 'هالوجينات', noble: 'نبيلة', lanth: 'لانثانيدات', act: 'أكتينيدات'
+};
+
+const CAT_NAMES_EN = {
+  alkali: 'Alkali', alkaline: 'Alkaline', transition: 'Transition',
+  post: 'Post-transition', metalloid: 'Metalloid', nonmetal: 'Nonmetal',
+  halogen: 'Halogen', noble: 'Noble', lanth: 'Lanthanide', act: 'Actinide'
+};
+
+// ============ التفاعلات ============
+const REACTIONS = {
+  'H-O': { ar: 'ماء (H₂O) 💧', en: 'Water (H₂O) 💧' },
+  'H-Cl': { ar: 'حمض الهيدروكلوريك (HCl) 🧪', en: 'Hydrochloric Acid (HCl) 🧪' },
+  'Na-Cl': { ar: 'ملح الطعام (NaCl) 🧂', en: 'Table Salt (NaCl) 🧂' },
+  'Na-O': { ar: 'أكسيد الصوديوم (Na₂O)', en: 'Sodium Oxide (Na₂O)' },
+  'C-O': { ar: 'ثاني أكسيد الكربون (CO₂) 🌫️', en: 'Carbon Dioxide (CO₂) 🌫️' },
+  'C-H': { ar: 'ميثان (CH₄) 🔥', en: 'Methane (CH₄) 🔥' },
+  'H-N': { ar: 'أمونيا (NH₃) 💨', en: 'Ammonia (NH₃) 💨' },
+  'H-S': { ar: 'كبريتيد الهيدروجين (H₂S) 🥚', en: 'Hydrogen Sulfide (H₂S) 🥚' },
+  'Ca-O': { ar: 'أكسيد الكالسيوم (CaO)', en: 'Calcium Oxide (CaO)' },
+  'Mg-O': { ar: 'أكسيد المغنيسيوم (MgO)', en: 'Magnesium Oxide (MgO)' },
+  'Fe-O': { ar: 'أكسيد الحديد - صدأ (Fe₂O₃) 🟤', en: 'Iron Oxide - Rust (Fe₂O₃) 🟤' },
+  'Cu-O': { ar: 'أكسيد النحاس (CuO)', en: 'Copper Oxide (CuO)' },
+  'K-Cl': { ar: 'كلوريد البوتاسيوم (KCl)', en: 'Potassium Chloride (KCl)' },
+  'Li-O': { ar: 'أكسيد الليثيوم (Li₂O)', en: 'Lithium Oxide (Li₂O)' },
+  'Al-O': { ar: 'أكسيد الألومنيوم (Al₂O₃)', en: 'Aluminum Oxide (Al₂O₃)' },
+  'S-O': { ar: 'ثاني أكسيد الكبريت (SO₂) 🌫️', en: 'Sulfur Dioxide (SO₂) 🌫️' },
+  'N-O': { ar: 'أكسيد النيتريك (NO)', en: 'Nitric Oxide (NO)' },
+  'Zn-Cl': { ar: 'كلوريد الزنك (ZnCl₂)', en: 'Zinc Chloride (ZnCl₂)' },
+  'Ag-Cl': { ar: 'كلوريد الفضة (AgCl) ⚪', en: 'Silver Chloride (AgCl) ⚪' },
+  'Au-Cl': { ar: 'كلوريد الذهب (AuCl₃)', en: 'Gold Chloride (AuCl₃)' },
+  'H-F': { ar: 'حمض الهيدروفلوريك (HF)', en: 'Hydrofluoric Acid (HF)' },
+  'H-Br': { ar: 'حمض الهيدروبروميك (HBr)', en: 'Hydrobromic Acid (HBr)' },
+  'H-I': { ar: 'حمض الهيدرويوديك (HI)', en: 'Hydroiodic Acid (HI)' },
+  'C-Cl': { ar: 'رباعي كلوريد الكربون (CCl₄)', en: 'Carbon Tetrachloride (CCl₄)' },
+  'Na-O': { ar: 'أكسيد الصوديوم (Na₂O)', en: 'Sodium Oxide (Na₂O)' },
+  'K-O': { ar: 'أكسيد البوتاسيوم (K₂O)', en: 'Potassium Oxide (K₂O)' },
+  'Ba-O': { ar: 'أكسيد الباريوم (BaO)', en: 'Barium Oxide (BaO)' },
+  'Ba-S': { ar: 'كبريتيد الباريوم (BaS)', en: 'Barium Sulfide (BaS)' },
+  'Ca-C': { ar: 'كاربيد الكالسيوم (CaC₂)', en: 'Calcium Carbide (CaC₂)' },
+  'Ca-Cl': { ar: 'كلوريد الكالسيوم (CaCl₂)', en: 'Calcium Chloride (CaCl₂)' },
+  'Mg-Cl': { ar: 'كلوريد المغنيسيوم (MgCl₂)', en: 'Magnesium Chloride (MgCl₂)' },
+  'He-H': { ar: 'لا يوجد تفاعل معروف مع الهيليوم', en: 'No known reaction with Helium' }
+};
+
+function getReaction(sym1, sym2) {
+  const key1 = `${sym1}-${sym2}`;
+  const key2 = `${sym2}-${sym1}`;
+  return REACTIONS[key1] || REACTIONS[key2] || null;
+}
+
+// ============ الجزيئات الشهيرة ============
+const KNOWN_MOLECULES = {
+  'H2O': { ar: 'الماء 💧', en: 'Water 💧' },
+  'CO2': { ar: 'ثاني أكسيد الكربون 🌫️', en: 'Carbon Dioxide 🌫️' },
+  'CH4': { ar: 'الميثان (غاز طبيعي) 🔥', en: 'Methane (Natural Gas) 🔥' },
+  'NH3': { ar: 'الأمونيا 💨', en: 'Ammonia 💨' },
+  'NaCl': { ar: 'ملح الطعام 🧂', en: 'Table Salt 🧂' },
+  'HCl': { ar: 'حمض الهيدروكلوريك 🧪', en: 'Hydrochloric Acid 🧪' },
+  'H2SO4': { ar: 'حمض الكبريتيك (أسيد البطاريات) 🔋', en: 'Sulfuric Acid (Battery Acid) 🔋' },
+  'HNO3': { ar: 'حمض النيتريك', en: 'Nitric Acid' },
+  'H2O2': { ar: 'فوق أكسيد الهيدروجين (مطهر) 🩹', en: 'Hydrogen Peroxide 🩹' },
+  'O2': { ar: 'الأكسجين (تنفس!) 🫁', en: 'Oxygen (Breathing!) 🫁' },
+  'O3': { ar: 'الأوزون (طبقة الحماية) 🛡️', en: 'Ozone 🛡️' },
+  'N2': { ar: 'النيتروجين (78% من الهواء)', en: 'Nitrogen (78% of Air)' },
+  'H2': { ar: 'الهيدروجين (أخف غاز) 🎈', en: 'Hydrogen (Lightest Gas) 🎈' },
+  'Cl2': { ar: 'الكلور (غاز سام أصفر)', en: 'Chlorine (Yellow Toxic Gas)' },
+  'CO': { ar: 'أول أكسيد الكربون (قاتل صامت!) ⚠️', en: 'Carbon Monoxide (Silent Killer) ⚠️' },
+  'SO2': { ar: 'ثاني أكسيد الكبريت (ملوث) 🌫️', en: 'Sulfur Dioxide (Pollutant) 🌫️' },
+  'NO2': { ar: 'ثاني أكسيد النيتروجين', en: 'Nitrogen Dioxide' },
+  'CaCO3': { ar: 'كربونات الكالسيوم (طباشير) 🪨', en: 'Calcium Carbonate (Chalk) 🪨' },
+  'NaHCO3': { ar: 'بيكربونات الصوديوم (صودا الخبز) 🥐', en: 'Baking Soda 🥐' },
+  'C6H12O6': { ar: 'الجلوكوز (سكر الدم) 🍯', en: 'Glucose (Blood Sugar) 🍯' },
+  'C2H5OH': { ar: 'الإيثانول (كحول)', en: 'Ethanol (Alcohol)' },
+  'CH3COOH': { ar: 'حمض الأسيتيك (خل) 🧂', en: 'Acetic Acid (Vinegar) 🧂' }
+};
+
+// ============ حالة التطبيق ============
+let currentLang = 'ar';
+let currentTheme = 'light';
+let currentSection = 'elements';
+let currentCategory = 'all';
+let slot1 = null;
+let slot2 = null;
+let currentMolecule = [];
+let quizCorrect = 0, quizWrong = 0, quizScore = 0;
+let currentMatter = 'solid';
+let matterAnimationId = null;
+
+// ============ الترجمات ============
+const TRANSLATIONS = {
+  ar: {
+    mainTitle: '⚗️ معمل الكيمياء',
+    subTitle: 'اكتشف عالم العناصر والتفاعلات الكيميائية!',
+    tabs: {
+      elements: '🧪 العناصر',
+      periodic: '📊 الجدول الدوري',
+      lab: '⚗️ معمل التفاعلات',
+      molecule: '🧬 بنّاء الجزيئات',
+      matter: '🌡️ حالات المادة',
+      quiz: '🎯 اختبار'
+    },
+    titles: {
+      elements: 'العناصر الكيميائية',
+      periodic: 'الجدول الدوري',
+      lab: 'معمل التفاعلات',
+      molecule: 'بنّاء الجزيئات',
+      matter: 'حالات المادة',
+      quiz: 'اختبر معرفتك الكيميائية'
+    },
+    allCategories: 'الكل',
+    slot1Label: 'العنصر الأول',
+    slot2Label: 'العنصر الثاني',
+    slotPlaceholder: 'اضغط للاختيار',
+    reactBtn: 'تفاعل!',
+    randomReactBtn: 'تفاعل عشوائي',
+    clearReactBtn: 'مسح',
+    labTitle: 'اختر عنصرين لترى تفاعلهما',
+    moleculeTitle: 'اضغط على عنصر لإضافته إلى الجزيء',
+    moleculePlaceholder: 'اضغط على عنصر لبناء جزيء',
+    speakMolBtn: 'اسمع الصيغة',
+    saveMolBtn: 'احفظ الصيغة',
+    clearMolBtn: 'مسح',
+    quizReady: 'اضغط "ابدأ الاختبار" للبدء',
+    startQuizBtn: 'ابدأ الاختبار',
+    resetQuizBtn: 'إعادة تعيين',
+    footer: '💜 صُنع بحب لتعليم الكيمياء — تواصل معنا عبر واتساب',
+    labelLang: 'English',
+    labelTheme: 'المظهر الليلي',
+    labelWhats: 'تواصل معنا',
+    correct: '🎉 أحسنت! إجابة صحيحة',
+    wrong: '❌ للأسف، حاول مرة أخرى',
+    chooseTwo: '⚠️ اختر عنصرين أولاً',
+    noReaction: '🧪 لا يوجد تفاعل معروف بين هذين العنصرين',
+    moleculeSaved: '💾 تم حفظ الصيغة',
+    moleculeEmpty: '⚠️ لم تضف أي عناصر بعد',
+    langChanged: 'Switched to English',
+    themeDark: 'تم تفعيل المظهر الليلي',
+    themeLight: 'تم تفعيل المظهر النهاري',
+    unknownMolecule: '🧪 صيغة غير معروفة — قد تكون مركّباً نظرياً',
+    knownMolecule: '✅ صيغة معروفة:',
+    solid: 'صلب',
+    liquid: 'سائل',
+    gas: 'غاز',
+    plasma: 'بلازما',
+    solidDesc: 'الذرات متراصة جداً وتتحرك بحركة اهتزازية بسيطة حول موضعها. الشكل والحجم ثابتان.',
+    liquidDesc: 'الذرات متقاربة لكنها قادرة على الانزلاق فوق بعضها. حجم ثابت لكن الشكل متغير.',
+    gasDesc: 'الذرات متباعدة جداً وتتحرك بحرية تامة وبسرعة عالية. لا شكل ولا حجم ثابت.',
+    plasmaDesc: 'غاز متأين عالي الطاقة. يوجد في الشمس والبرق والمصابيح الفلورية.'
+  },
+  en: {
+    mainTitle: '⚗️ Chemistry Lab',
+    subTitle: 'Discover the world of elements and chemical reactions!',
+    tabs: {
+      elements: '🧪 Elements',
+      periodic: '📊 Periodic Table',
+      lab: '⚗️ Reaction Lab',
+      molecule: '🧬 Molecule Builder',
+      matter: '🌡️ States of Matter',
+      quiz: '🎯 Quiz'
+    },
+    titles: {
+      elements: 'Chemical Elements',
+      periodic: 'Periodic Table',
+      lab: 'Reaction Lab',
+      molecule: 'Molecule Builder',
+      matter: 'States of Matter',
+      quiz: 'Test Your Chemistry Knowledge'
+    },
+    allCategories: 'All',
+    slot1Label: 'First Element',
+    slot2Label: 'Second Element',
+    slotPlaceholder: 'Click to choose',
+    reactBtn: 'React!',
+    randomReactBtn: 'Random Reaction',
+    clearReactBtn: 'Clear',
+    labTitle: 'Choose two elements to see their reaction',
+    moleculeTitle: 'Click an element to add it to the molecule',
+    moleculePlaceholder: 'Click an element to build a molecule',
+    speakMolBtn: 'Hear Formula',
+    saveMolBtn: 'Save Formula',
+    clearMolBtn: 'Clear',
+    quizReady: 'Press "Start Quiz" to begin',
+    startQuizBtn: 'Start Quiz',
+    resetQuizBtn: 'Reset',
+    footer: '💜 Made with love for Chemistry — Contact us on WhatsApp',
+    labelLang: 'العربية',
+    labelTheme: 'Dark Mode',
+    labelWhats: 'Contact Us',
+    correct: '🎉 Great! Correct answer',
+    wrong: '❌ Sorry, try again',
+    chooseTwo: '⚠️ Choose two elements first',
+    noReaction: '🧪 No known reaction between these two elements',
+    moleculeSaved: '💾 Formula saved',
+    moleculeEmpty: '⚠️ No elements added yet',
+    langChanged: 'Switched to Arabic',
+    themeDark: 'Dark mode activated',
+    themeLight: 'Light mode activated',
+    unknownMolecule: '🧪 Unknown formula — could be a theoretical compound',
+    knownMolecule: '✅ Known formula:',
+    solid: 'Solid',
+    liquid: 'Liquid',
+    gas: 'Gas',
+    plasma: 'Plasma',
+    solidDesc: 'Atoms are very tightly packed and vibrate slightly around fixed positions. Fixed shape and volume.',
+    liquidDesc: 'Atoms are close but can slide past each other. Fixed volume but variable shape.',
+    gasDesc: 'Atoms are far apart and move freely at high speed. No fixed shape or volume.',
+    plasmaDesc: 'High-energy ionized gas. Found in the Sun, lightning, and fluorescent lamps.'
+  }
+};
+
+function t(key) {
+  const keys = key.split('.');
+  let value = TRANSLATIONS[currentLang];
+  for (const k of keys) {
+    if (value && value[k] !== undefined) value = value[k];
+    else return key;
+  }
+  return value;
+}
+
+function safeSetText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function getElementName(el) {
+  return currentLang === 'ar' ? el.ar : el.en;
+}
+
+function getCatName(cat) {
+  return currentLang === 'ar' ? CAT_NAMES_AR[cat] : CAT_NAMES_EN[cat];
+}
+
+// ============ التبويبات ============
+function createTabs() {
+  const sections = ['elements', 'periodic', 'lab', 'molecule', 'matter', 'quiz'];
+  const container = document.getElementById('tabsContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  sections.forEach(section => {
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (section === currentSection ? ' active' : '');
+    tab.dataset.section = section;
+    tab.textContent = t(`tabs.${section}`);
+    tab.onclick = () => switchSection(section);
+    container.appendChild(tab);
+  });
+}
+
+function switchSection(section) {
+  currentSection = section;
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.section === section);
+  });
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  const target = document.getElementById(`section-${section}`);
+  if (target) target.classList.add('active');
+  if (section === 'matter') renderMatter();
+}
+
+// ============ تحديث اللغة ============
+function updateUILanguage() {
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+  safeSetText('mainTitle', t('mainTitle'));
+  safeSetText('subTitle', t('subTitle'));
+  safeSetText('titleElements', t('titles.elements'));
+  safeSetText('titlePeriodic', t('titles.periodic'));
+  safeSetText('titleLab', t('titles.lab'));
+  safeSetText('titleMolecule', t('titles.molecule'));
+  safeSetText('titleMatter', t('titles.matter'));
+  safeSetText('titleQuiz', t('titles.quiz'));
+  safeSetText('labTitle', t('labTitle'));
+  safeSetText('moleculeTitle', t('moleculeTitle'));
+  safeSetText('slot1Label', t('slot1Label'));
+  safeSetText('slot2Label', t('slot2Label'));
+  safeSetText('reactBtn', t('reactBtn'));
+  safeSetText('randomReactBtn', t('randomReactBtn'));
+  safeSetText('clearReactBtn', t('clearReactBtn'));
+  safeSetText('speakMolBtn', t('speakMolBtn'));
+  safeSetText('saveMolBtn', t('saveMolBtn'));
+  safeSetText('clearMolBtn', t('clearMolBtn'));
+  safeSetText('startQuizBtn', t('startQuizBtn'));
+  safeSetText('resetQuizBtn', t('resetQuizBtn'));
+  safeSetText('footerText', t('footer'));
+  safeSetText('labelLang', t('labelLang'));
+  safeSetText('labelTheme', t('labelTheme'));
+  safeSetText('labelWhats', t('labelWhats'));
+
+  if (!slot1) safeSetText('slot1Name', t('slotPlaceholder'));
+  else safeSetText('slot1Name', getElementName(slot1));
+  if (!slot2) safeSetText('slot2Name', t('slotPlaceholder'));
+  else safeSetText('slot2Name', getElementName(slot2));
+}
+
+// ============ النطق ============
+function speak(text, lang) {
+  if (!('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || (currentLang === 'ar' ? 'ar-SA' : 'en-US');
+    u.rate = 0.85;
+    u.pitch = 1.1;
+    const voices = window.speechSynthesis.getVoices();
+    const target = u.lang.split('-')[0];
+    const voice = voices.find(v => v.lang && v.lang.startsWith(target));
+    if (voice) u.voice = voice;
+    window.speechSynthesis.speak(u);
+  } catch (e) { console.warn(e); }
+}
+
+// ============ عرض العناصر ============
+function renderCategoriesFilter() {
+  const container = document.getElementById('categoriesFilter');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.className = 'cat-btn' + (currentCategory === 'all' ? ' active' : '');
+  allBtn.textContent = t('allCategories');
+  allBtn.style.background = currentCategory === 'all' ? 'linear-gradient(135deg, #00b4d8, #7b2ff7)' : '';
+  allBtn.style.color = currentCategory === 'all' ? 'white' : '';
+  allBtn.onclick = () => { currentCategory = 'all'; renderCategoriesFilter(); renderElements(); };
+  container.appendChild(allBtn);
+
+  Object.keys(CAT_COLORS).forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (currentCategory === cat ? ' active' : '');
+    btn.textContent = getCatName(cat);
+    if (currentCategory === cat) {
+      btn.style.background = CAT_COLORS[cat];
+      btn.style.color = 'white';
+    }
+    btn.onclick = () => { currentCategory = cat; renderCategoriesFilter(); renderElements(); };
+    container.appendChild(btn);
+  });
+}
+
+function renderElements() {
+  const grid = document.getElementById('elementsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const filtered = currentCategory === 'all'
+    ? ELEMENTS
+    : ELEMENTS.filter(e => e.cat === currentCategory);
+
+  filtered.forEach(el => {
+    const card = document.createElement('div');
+    card.className = 'element-card';
+    card.style.setProperty('--cat-color', CAT_COLORS[el.cat] || '#00b4d8');
+    card.innerHTML = `
+      <div class="element-atomic">${el.z}</div>
+      <div class="element-symbol">${el.sym}</div>
+      <div class="element-name">${getElementName(el)}</div>
+      <div class="element-mass">${el.mass} u</div>
+    `;
+    card.onclick = () => {
+      const name = getElementName(el);
+      speak(`${name}، رمزه ${el.sym}، عدده الذري ${el.z}`, 'ar-SA');
+      card.classList.add('speaking');
+      setTimeout(() => card.classList.remove('speaking'), 500);
+    };
+    grid.appendChild(card);
+  });
+}
+
+// ============ الجدول الدوري ============
+function renderPeriodicTable() {
+  const table = document.getElementById('periodicTable');
+  if (!table) return;
+  table.innerHTML = '';
+
+  // نُنشئ شبكة 7 صفوف × 18 عمود
+  const grid = {};
+  ELEMENTS.forEach(el => {
+    if (el.cat === 'lanth' && el.row === 6 && el.col >= 3) {
+      // اللانثانيدات
+      grid[`8-${el.z - 57 + 4}`] = el;
+    } else if (el.cat === 'act' && el.row === 7 && el.col >= 3) {
+      // الأكتينيدات
+      grid[`9-${el.z - 89 + 4}`] = el;
+    } else {
+      grid[`${el.row}-${el.col}`] = el;
+    }
+  });
+
+  for (let r = 1; r <= 9; r++) {
+    if (r === 8 || r === 9) {
+      // صف فاصل
+      for (let c = 1; c <= 18; c++) {
+        if (c === 1) continue;
+        if (c === 2) continue;
+        if (c === 3) continue;
+      }
+    }
+    for (let c = 1; c <= 18; c++) {
+      const key = `${r}-${c}`;
+      const el = grid[key];
+
+      if (!el) {
+        const empty = document.createElement('div');
+        empty.className = 'pt-element empty';
+        table.appendChild(empty);
+      } else {
+        const node = document.createElement('div');
+        node.className = 'pt-element';
+        node.style.setProperty('--cat-color', CAT_COLORS[el.cat] || '#00b4d8');
+        node.innerHTML = `
+          <span class="pt-num">${el.z}</span>
+          <span class="pt-sym">${el.sym}</span>
+          <span class="pt-name">${currentLang === 'ar' ? el.ar : el.en}</span>
+        `;
+        node.onclick = () => {
+          const name = getElementName(el);
+          speak(`${name}، ${el.sym}`, currentLang === 'ar' ? 'ar-SA' : 'en-US');
+          node.style.transform = 'scale(1.3)';
+          setTimeout(() => node.style.transform = '', 300);
+        };
+        table.appendChild(node);
+      }
+    }
+  }
+}
+
+// ============ معمل التفاعلات ============
+let pickingSlot = 0;
+
+function openPicker(slotNum) {
+  pickingSlot = slotNum;
+  const picker = document.getElementById('elementPicker');
+  if (!picker) return;
+  if (picker.style.display === 'grid') {
+    picker.style.display = 'none';
+    return;
+  }
+  picker.style.display = 'grid';
+  picker.innerHTML = '';
+  ELEMENTS.slice(0, 60).forEach(el => {
+    const btn = document.createElement('button');
+    btn.className = 'element-pick';
+    btn.style.setProperty('--cat-color', CAT_COLORS[el.cat] || '#00b4d8');
+    btn.textContent = el.sym;
+    btn.title = getElementName(el);
+    btn.onclick = () => {
+      if (pickingSlot === 1) {
+        slot1 = el;
+        safeSetText('slot1Symbol', el.sym);
+        safeSetText('slot1Name', getElementName(el));
+        document.getElementById('slot1Symbol').style.color = CAT_COLORS[el.cat];
+      } else {
+        slot2 = el;
+        safeSetText('slot2Symbol', el.sym);
+        safeSetText('slot2Name', getElementName(el));
+        document.getElementById('slot2Symbol').style.color = CAT_COLORS[el.cat];
+      }
+      picker.style.display = 'none';
+      speak(getElementName(el), currentLang === 'ar' ? 'ar-SA' : 'en-US');
+    };
+    picker.appendChild(btn);
+  });
+}
+
+function reactElements() {
+  const result = document.getElementById('reactionResult');
+  if (!result) return;
+  if (!slot1 || !slot2) {
+    result.textContent = t('chooseTwo');
+    result.className = 'reaction-result error';
+    return;
+  }
+
+  const reaction = getReaction(slot1.sym, slot2.sym);
+  if (reaction) {
+    result.textContent = `✨ ${reaction[currentLang]}`;
+    result.className = 'reaction-result success';
+    speak(reaction[currentLang].replace(/[💧🧪🧂🌫️🔥💨🥚🟤⚪⚠️🛡️]/g, ''), currentLang === 'ar' ? 'ar-SA' : 'en-US');
+  } else {
+    result.textContent = t('noReaction');
+    result.className = 'reaction-result error';
+    speak(t('noReaction'), currentLang === 'ar' ? 'ar-SA' : 'en-US');
+  }
+}
+
+function randomReaction() {
+  const el1 = ELEMENTS[Math.floor(Math.random() * ELEMENTS.length)];
+  const el2 = ELEMENTS[Math.floor(Math.random() * ELEMENTS.length)];
+  slot1 = el1;
+  slot2 = el2;
+  safeSetText('slot1Symbol', el1.sym);
+  safeSetText('slot1Name', getElementName(el1));
+  document.getElementById('slot1Symbol').style.color = CAT_COLORS[el1.cat];
+  safeSetText('slot2Symbol', el2.sym);
+  safeSetText('slot2Name', getElementName(el2));
+  document.getElementById('slot2Symbol').style.color = CAT_COLORS[el2.cat];
+  reactElements();
+}
+
+function clearReaction() {
+  slot1 = null; slot2 = null;
+  safeSetText('slot1Symbol', '?');
+  safeSetText('slot2Symbol', '?');
+  safeSetText('slot1Name', t('slotPlaceholder'));
+  safeSetText('slot2Name', t('slotPlaceholder'));
+  document.getElementById('slot1Symbol').style.color = '';
+  document.getElementById('slot2Symbol').style.color = '';
+  const result = document.getElementById('reactionResult');
+  if (result) { result.textContent = ''; result.className = 'reaction-result'; }
+}
+
+// ============ بنّاء الجزيئات ============
+function renderMoleculePicker() {
+  const picker = document.getElementById('moleculePicker');
+  if (!picker) return;
+  picker.style.display = 'grid';
+  picker.innerHTML = '';
+  ELEMENTS.slice(0, 40).forEach(el => {
+    const btn = document.createElement('button');
+    btn.className = 'element-pick';
+    btn.style.setProperty('--cat-color', CAT_COLORS[el.cat] || '#00b4d8');
+    btn.textContent = el.sym;
+    btn.title = getElementName(el);
+    btn.onclick = () => {
+      currentMolecule.push(el);
+      renderMolecule();
+      speak(el.sym, 'en-US');
+    };
+    picker.appendChild(btn);
+  });
+}
+
+function renderMolecule() {
+  const display = document.getElementById('moleculeDisplay');
+  if (!display) return;
+
+  if (currentMolecule.length === 0) {
+    display.innerHTML = `<span class="mol-placeholder">${t('moleculePlaceholder')}</span>`;
+    return;
+  }
+
+  // تجميع العناصر المتشابهة
+  const grouped = {};
+  currentMolecule.forEach(el => {
+    grouped[el.sym] = (grouped[el.sym] || 0) + 1;
+  });
+
+  display.innerHTML = '';
+  Object.keys(grouped).forEach(sym => {
+    const count = grouped[sym];
+    const span = document.createElement('span');
+    span.className = 'mol-symbol';
+    span.innerHTML = `${sym}${count > 1 ? `<span class="mol-count">${count}</span>` : ''}`;
+    display.appendChild(span);
+  });
+}
+
+function speakMolecule() {
+  if (currentMolecule.length === 0) {
+    showToast(t('moleculeEmpty'));
+    return;
+  }
+  const formula = getMoleculeFormula();
+  const known = KNOWN_MOLECULES[formula];
+  const text = known ? known[currentLang] : formula;
+  speak(text, currentLang === 'ar' ? 'ar-SA' : 'en-US');
+}
+
+function getMoleculeFormula() {
+  const grouped = {};
+  currentMolecule.forEach(el => {
+    grouped[el.sym] = (grouped[el.sym] || 0) + 1;
+  });
+  // ترتيب: C ثم H ثم الباقي أبجدياً
+  const order = Object.keys(grouped).sort((a, b) => {
+    if (a === 'C') return -1;
+    if (b === 'C') return 1;
+    if (a === 'H') return -1;
+    if (b === 'H') return 1;
+    return a.localeCompare(b);
+  });
+  let formula = '';
+  order.forEach(sym => {
+    formula += sym + (grouped[sym] > 1 ? grouped[sym] : '');
+  });
+  return formula;
+}
+
+function saveMolecule() {
+  if (currentMolecule.length === 0) {
+    showToast(t('moleculeEmpty'));
+    return;
+  }
+  const formula = getMoleculeFormula();
+  const known = KNOWN_MOLECULES[formula];
+  const result = document.getElementById('moleculeResult');
+  if (result) {
+    if (known) {
+      result.textContent = `${t('knownMolecule')} ${known[currentLang]} (${formula})`;
+      result.className = 'reaction-result success';
+    } else {
+      result.textContent = `${t('unknownMolecule')} (${formula})`;
+      result.className = 'reaction-result';
+    }
+  }
+  showToast(t('moleculeSaved'));
+  speak(formula, 'en-US');
+}
+
+function clearMolecule() {
+  currentMolecule = [];
+  renderMolecule();
+  const result = document.getElementById('moleculeResult');
+  if (result) { result.textContent = ''; result.className = 'reaction-result'; }
+}
+
+// ============ حالات المادة ============
+const MATTER_STATES = ['solid', 'liquid', 'gas', 'plasma'];
+
+function renderMatterSelector() {
+  const sel = document.getElementById('matterSelector');
+  if (!sel) return;
+  sel.innerHTML = '';
+  const icons = { solid: '🧊', liquid: '💧', gas: '💨', plasma: '⚡' };
+  MATTER_STATES.forEach(state => {
+    const btn = document.createElement('button');
+    btn.className = 'matter-btn' + (currentMatter === state ? ' active' : '');
+    btn.textContent = `${icons[state]} ${t(state)}`;
+    if (currentMatter === state) {
+      btn.style.background = 'linear-gradient(135deg, #00b4d8, #7b2ff7)';
+      btn.style.color = 'white';
+    }
+    btn.onclick = () => { currentMatter = state; renderMatter(); };
+    sel.appendChild(btn);
+  });
+}
+
+function renderMatter() {
+  renderMatterSelector();
+  const visual = document.getElementById('matterVisual');
+  const info = document.getElementById('matterInfo');
+  if (!visual || !info) return;
+
+  // إيقاف الأنيميشن السابق
+  if (matterAnimationId) cancelAnimationFrame(matterAnimationId);
+
+  visual.innerHTML = '';
+  const particles = [];
+  const count = currentMatter === 'gas' ? 20 : currentMatter === 'plasma' ? 25 : 30;
+  const width = visual.clientWidth || 400;
+  const height = visual.clientHeight || 250;
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    if (currentMatter === 'plasma') {
+      p.style.background = 'radial-gradient(circle at 30% 30%, #ff006e, #ffb703)';
+      p.style.boxShadow = '0 0 20px rgba(255, 0, 110, 0.8)';
+    } else if (currentMatter === 'gas') {
+      p.style.background = 'radial-gradient(circle at 30% 30%, #48cae4, #0077b6)';
+      p.style.opacity = '0.7';
+    } else if (currentMatter === 'liquid') {
+      p.style.background = 'radial-gradient(circle at 30% 30%, #48cae4, #0096c7)';
+    }
+    p.style.width = p.style.height = (currentMatter === 'gas' ? '18px' : '22px');
+    p.style.position = 'absolute';
+    visual.appendChild(p);
+    particles.push({
+      el: p,
+      x: Math.random() * (width - 30),
+      y: Math.random() * (height - 30),
+      vx: (Math.random() - 0.5) * (currentMatter === 'gas' ? 3 : currentMatter === 'plasma' ? 4 : currentMatter === 'liquid' ? 1 : 0.3),
+      vy: (Math.random() - 0.5) * (currentMatter === 'gas' ? 3 : currentMatter === 'plasma' ? 4 : currentMatter === 'liquid' ? 1 : 0.3),
+      baseX: Math.random() * (width - 30),
+      baseY: Math.random() * (height - 30),
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  let time = 0;
+  function animate() {
+    time += 0.05;
+    const w = visual.clientWidth;
+    const h = visual.clientHeight;
+    particles.forEach(p => {
+      if (currentMatter === 'solid') {
+        // اهتزاز حول موضع ثابت
+        p.x = p.baseX + Math.sin(time + p.phase) * 2;
+        p.y = p.baseY + Math.cos(time + p.phase) * 2;
+      } else {
+        p.x += p.vx;
+        p.y += p.vy;
+        // ارتداد من الحواف
+        if (p.x <= 0 || p.x >= w - 25) p.vx *= -1;
+        if (p.y <= 0 || p.y >= h - 25) p.vy *= -1;
+        // حدود
+        if (currentMatter === 'liquid') {
+          if (p.y > h - 100) p.vy = -Math.abs(p.vy);
+        }
+        p.x = Math.max(0, Math.min(w - 25, p.x));
+        p.y = Math.max(0, Math.min(h - 25, p.y));
+      }
+      p.el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+    });
+    matterAnimationId = requestAnimationFrame(animate);
+  }
+  animate();
+
+  info.textContent = t(`${currentMatter}Desc`);
+}
+
+// ============ الاختبار ============
+const QUIZ_POOL = [
+  { ar: 'ما هو الرمز الكيميائي للذهب؟', en: 'What is the chemical symbol for Gold?', optsAr: ['Au', 'Go', 'Ag', 'Gd'], optsEn: ['Au', 'Go', 'Ag', 'Gd'], correct: 0 },
+  { ar: 'كم عدد ذرات الهيدروجين في جزيء الماء H₂O؟', en: 'How many hydrogen atoms in H₂O?', optsAr: ['1', '2', '3', '4'], optsEn: ['1', '2', '3', '4'], correct: 1 },
+  { ar: 'ما هو الغاز الذي نتنفسه؟', en: 'Which gas do we breathe?', optsAr: ['النيتروجين', 'الأكسجين', 'الهيليوم', 'الأرجون'], optsEn: ['Nitrogen', 'Oxygen', 'Helium', 'Argon'], correct: 1 },
+  { ar: 'ما هو العنصر الأكثر وفرة في الكون؟', en: 'Which is the most abundant element in the universe?', optsAr: ['الأكسجين', 'الهيدروجين', 'الكربون', 'الحديد'], optsEn: ['Oxygen', 'Hydrogen', 'Carbon', 'Iron'], correct: 1 },
+  { ar: 'ما هي الصيغة الكيميائية لملح الطعام؟', en: 'What is the formula for table salt?', optsAr: ['NaCl', 'KCl', 'CaCl₂', 'HCl'], optsEn: ['NaCl', 'KCl', 'CaCl₂', 'HCl'], correct: 0 },
+  { ar: 'كم عدد عناصر الجدول الدوري حالياً؟', en: 'How many elements are in the periodic table?', optsAr: ['92', '108', '118', '120'], optsEn: ['92', '108', '118', '120'], correct: 2 },
+  { ar: 'ما العنصر الأثقل من بين هذه؟', en: 'Which element is the heaviest?', optsAr: ['الحديد', 'الذهب', 'الألومنيوم', 'النحاس'], optsEn: ['Iron', 'Gold', 'Aluminum', 'Copper'], correct: 1 },
+  { ar: 'ما هو رمز الصوديوم؟', en: 'What is the symbol for Sodium?', optsAr: ['So', 'Sd', 'Na', 'S'], optsEn: ['So', 'Sd', 'Na', 'S'], correct: 2 },
+  { ar: 'ما الغاز النبيل الذي نستخدمه في البالونات؟', en: 'Which noble gas is used in balloons?', optsAr: ['النيون', 'الأرجون', 'الهيليوم', 'الكريبتون'], optsEn: ['Neon', 'Argon', 'Helium', 'Krypton'], correct: 2 },
+  { ar: 'ما ناتج تفاعل الهيدروجين مع الأكسجين؟', en: 'Hydrogen + Oxygen produces?', optsAr: ['ملح', 'ماء', 'أمونيا', 'ميثان'], optsEn: ['Salt', 'Water', 'Ammonia', 'Methane'], correct: 1 },
+  { ar: 'ما العدد الذري للكربون؟', en: 'What is the atomic number of Carbon?', optsAr: ['4', '6', '8', '12'], optsEn: ['4', '6', '8', '12'], correct: 1 },
+  { ar: 'أي مما يلي فلز قلوي؟', en: 'Which of these is an alkali metal?', optsAr: ['الحديد', 'الكالسيوم', 'الليثيوم', 'الزنك'], optsEn: ['Iron', 'Calcium', 'Lithium', 'Zinc'], correct: 2 },
+  { ar: 'ما هي الحالة التي تكون فيها الذرات متراصة جداً؟', en: 'In which state are atoms tightly packed?', optsAr: ['الصلبة', 'السائلة', 'الغازية', 'البلازما'], optsEn: ['Solid', 'Liquid', 'Gas', 'Plasma'], correct: 0 },
+  { ar: 'ما الصيغة الكيميائية لثاني أكسيد الكربون؟', en: 'What is the formula for Carbon Dioxide?', optsAr: ['CO', 'CO₂', 'C₂O', 'CaO'], optsEn: ['CO', 'CO₂', 'C₂O', 'CaO'], correct: 1 },
+  { ar: 'أي مما يلي غاز نبيل؟', en: 'Which of these is a noble gas?', optsAr: ['الأكسجين', 'النيون', 'الكلور', 'النيتروجين'], optsEn: ['Oxygen', 'Neon', 'Chlorine', 'Nitrogen'], correct: 1 }
+];
+
+function startQuiz() { newQuizQuestion(); }
+
+function resetQuiz() {
+  quizCorrect = 0; quizWrong = 0; quizScore = 0;
+  updateQuizStats();
+  safeSetText('quizQuestion', t('quizReady'));
+  const opts = document.getElementById('quizOptions');
+  if (opts) opts.innerHTML = '';
+}
+
+function updateQuizStats() {
+  safeSetText('quizCorrect', quizCorrect);
+  safeSetText('quizWrong', quizWrong);
+  safeSetText('quizScore', quizScore);
+}
+
+function newQuizQuestion() {
+  const q = QUIZ_POOL[Math.floor(Math.random() * QUIZ_POOL.length)];
+  const question = currentLang === 'ar' ? q.ar : q.en;
+  const options = currentLang === 'ar' ? q.optsAr : q.optsEn;
+  const correct = q.correct;
+
+  safeSetText('quizQuestion', question);
+
+  const optsContainer = document.getElementById('quizOptions');
+  if (!optsContainer) return;
+  optsContainer.innerHTML = '';
+  options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = opt;
+    btn.onclick = () => checkQuizAnswer(btn, idx, correct);
+    optsContainer.appendChild(btn);
+  });
+}
+
+function checkQuizAnswer(btn, chosen, correct) {
+  if (btn.disabled) return;
+  document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    quizCorrect++;
+    quizScore += 10;
+    showToast(t('correct'));
+    speak(t('correct'), currentLang === 'ar' ? 'ar-SA' : 'en-US');
+  } else {
+    btn.classList.add('wrong');
+    quizWrong++;
+    quizScore = Math.max(0, quizScore - 3);
+    showToast(t('wrong'));
+    document.querySelectorAll('.quiz-option').forEach((b, i) => {
+      if (i === correct) b.classList.add('correct');
+    });
+  }
+  updateQuizStats();
+  setTimeout(newQuizQuestion, 1800);
+}
+
+// ============ تبديل اللغة ============
+function toggleLanguage() {
+  currentLang = currentLang === 'ar' ? 'en' : 'ar';
+  try { localStorage.setItem('chem_lang', currentLang); } catch (e) {}
+  createTabs();
+  updateUILanguage();
+  renderAll();
+  switchSection(currentSection);
+  updateThemeButton();
+  showToast(t('langChanged'));
+}
+
+// ============ تبديل المظهر ============
+function toggleTheme() {
+  currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.body.classList.toggle('dark-mode', currentTheme === 'dark');
+  try { localStorage.setItem('chem_theme', currentTheme); } catch (e) {}
+  updateThemeButton();
+  showToast(currentTheme === 'dark' ? t('themeDark') : t('themeLight'));
+}
+
+function updateThemeButton() {
+  const btn = document.querySelector('.fab-theme');
+  if (!btn) return;
+  btn.firstChild.nodeValue = currentTheme === 'dark' ? '☀️' : '🌙';
+  const lbl = document.getElementById('labelTheme');
+  if (lbl) lbl.textContent = t('labelTheme');
+}
+
+// ============ عرض الكل ============
+function renderAll() {
+  renderCategoriesFilter();
+  renderElements();
+  renderPeriodicTable();
+  renderMoleculePicker();
+  renderMolecule();
+  renderMatterSelector();
+  // إعادة عرض التفاعل الحالي إن وجد
+  if (slot1) safeSetText('slot1Name', getElementName(slot1));
+  if (slot2) safeSetText('slot2Name', getElementName(slot2));
+}
+
+// ============ Toast ============
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ============ التهيئة ============
+function initApp() {
+  try {
+    let savedLang = null, savedTheme = null;
+    try {
+      savedLang = localStorage.getItem('chem_lang');
+      savedTheme = localStorage.getItem('chem_theme');
+    } catch (e) {}
+
+    if (savedLang === 'ar' || savedLang === 'en') currentLang = savedLang;
+    if (savedTheme === 'dark') {
+      currentTheme = 'dark';
+      document.body.classList.add('dark-mode');
+    } else {
+      currentTheme = 'light';
+      document.body.classList.remove('dark-mode');
+    }
+
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+    createTabs();
+    updateUILanguage();
+    renderAll();
+    switchSection(currentSection);
+    updateThemeButton();
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+    console.log('✅ تم تهيئة معمل الكيمياء - اللغة:', currentLang);
+  } catch (err) {
+    console.error('❌ خطأ تهيئة:', err);
+    try {
+      currentLang = 'ar';
+      currentTheme = 'light';
+      try { localStorage.removeItem('chem_lang'); localStorage.removeItem('chem_theme'); } catch (e) {}
+      document.body.classList.remove('dark-mode');
+      document.documentElement.lang = 'ar';
+      document.documentElement.dir = 'rtl';
+      createTabs();
+      updateUILanguage();
+      renderAll();
+      switchSection('elements');
+      updateThemeButton();
+    } catch (e2) { console.error(e2); }
+  }
+}
+
+// مراقبة تغيير حجم النافذة لإعادة رسم حالات المادة
+window.addEventListener('resize', () => {
+  if (currentSection === 'matter') renderMatter();
+});
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) initApp();
+});
+</script>
+</body>
+</html>
